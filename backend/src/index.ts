@@ -17,7 +17,7 @@ wss.on('listening', () => {
 
 wss.on('connection', (ws) => {
     ws.onmessage = (data) => {
-        try {            
+        try {
             const parsedData = JSON.parse(data.data as string);
             console.log('Incoming Message', parsedData);
             messageHandler(ws, parsedData);
@@ -33,6 +33,7 @@ function messageHandler(socket: WebSocket, message: IncomingMessageType) {
 
     if (message.type === 'join-room') {
         userManager.addUser(message.roomId, message.userId, message.name, socket);
+        socket.onclose = () => { userManager.removeUser(message.roomId, message.userId) }
     }
 
     else if (message.type === 'chat') {
@@ -42,7 +43,7 @@ function messageHandler(socket: WebSocket, message: IncomingMessageType) {
             return;
         }
         const chat = store.addChat(message.roomId, message.userId, user.name, message.message)
-        if(!chat){
+        if (!chat) {
             return;
         }
         userManager.broadcast(message.roomId, message.userId, {
@@ -55,10 +56,10 @@ function messageHandler(socket: WebSocket, message: IncomingMessageType) {
             upvotes: 0
         });
     }
-    
+
     else if (message.type === 'upvote') {
         const chat = store.upVote(message.roomId, message.userId, message.chatId);
-        if(!chat){
+        if (!chat) {
             return;
         }
 
@@ -69,5 +70,8 @@ function messageHandler(socket: WebSocket, message: IncomingMessageType) {
             userId: message.userId,
             upvotes: chat.upvotes.length
         });
+    }
+    else{
+        console.log('invalid message type', message);
     }
 }

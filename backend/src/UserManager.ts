@@ -54,9 +54,11 @@ export class UserManager {
         }
 
         console.log('broadcasting message', message);
-        
-        room.forEach(({ socket }) => {
-            socket.send(JSON.stringify(message));
+
+        room.forEach(({ socket, id }) => {
+            if (id !== senderId) {
+                socket.send(JSON.stringify(message));
+            }
         })
     }
 
