@@ -24,21 +24,34 @@ export class InMemoryStore implements Store {
     }
 
     addChat(roomId: string, userId: UserId, name: string, message: string) {
-        this.rooms.get(roomId)?.push({
+
+        if (!this.rooms.get(roomId)) {
+            return null;
+        }
+
+        const chat = {
             id: ++GlobalChatId,
             senderName: name,
             senderId: userId,
             message,
-            upVotes: [],
-            downVotes: []
-        })
+            upvotes: []
+        };
+        this.rooms.get(roomId)?.push(chat);
+        console.log('chat added', message);
+        
+        return chat;
     }
 
     upVote(roomId: string, userId: UserId, chatId: number) {
-        this.rooms.get(roomId)?.find(({ id }) => id === chatId)?.upVotes.push(userId);
-    }
+        const chat = this.rooms.get(roomId)?.find(({ id }) => id === chatId);
+        if (!chat){
+            return null;
+        }
+        this.rooms.get(roomId)?.find(({ id }) => id === chatId)?.upvotes.push(userId);
+        chat.upvotes.push(userId);
 
-    downVote(roomId: string, userId: UserId, chatId: number) {
-        this.rooms.get(roomId)?.find(({ id }) => id === chatId)?.downVotes.push(userId);
+        console.log('upvoted chat', chat);
+        
+        return chat;
     }
 }

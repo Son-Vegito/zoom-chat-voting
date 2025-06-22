@@ -7,8 +7,7 @@ export interface Chat {
     senderId: UserId,
     message: string,
     //use set instead of array to avoid duplicates
-    upVotes: UserId[],
-    downVotes: UserId[]
+    upvotes: UserId[]
 }
 
 export abstract class Store {
