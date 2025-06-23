@@ -38,23 +38,26 @@ export class InMemoryStore implements Store {
         };
         this.rooms.get(roomId)?.push(chat);
         console.log('chat added', message);
-        
+
         return chat;
     }
 
     upVote(roomId: string, userId: UserId, chatId: number) {
         const chat = this.rooms.get(roomId)?.find(({ id }) => id === chatId);
-        if (!chat){
+        if (!chat) {
             console.log('chat not found');
             console.log(this.rooms);
             return null;
         }
+
+        if (chat.upvotes.includes(userId)) {
+            return;
+        }
+        git
         this.rooms.get(roomId)?.find(({ id }) => id === chatId)?.upvotes.push(userId);
 
-        // chat.upvotes.push(userId);
-
         console.log('upvoted chat', chat);
-        
+
         return chat;
     }
 }
